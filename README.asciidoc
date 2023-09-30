@@ -1,9 +1,6 @@
 ## 简介
 
-Cisco开源的一个使用DPDK发包的高性能测试仪。
-
-[^https://blog.csdn.net/yb890102/article/details/127587910]: Cisco开源的一个使用DPDK发包的高性能测试仪。
-
+这是Cisco开源的一个使用DPDK发包的高性能测试仪。
 主要的工作原理概括如下：
 
 1. 使用scapy来构建数据包模板；或者从pcap文件中读取数据包模板；
