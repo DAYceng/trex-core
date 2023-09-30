@@ -55,6 +55,7 @@ def get_valgrind():
 
 
 def execute_bp_sim(opts):
+    print("\n[execute_bp_sim], opts.release = {}".format(opts.release))
     if opts.release:
         exe = os.path.join(opts.bp_sim_path, 'bp-sim-64')
     else:
@@ -63,6 +64,7 @@ def execute_bp_sim(opts):
         if not os.path.exists(exe):
             raise Exception("'{0}' does not exist, please build it before calling the simulation".format(exe))
 
+    print("[execute_bp_sim], opts.cmd = {}".format(opts.cmd))
     if opts.cmd:
         args = opts.cmd.split(",")
         #args = list(map(lambda x: "--"+x, args)) 
@@ -70,25 +72,31 @@ def execute_bp_sim(opts):
         args = []
 
     exe = [exe]
+    print("[execute_bp_sim], opts.valgrind = {}, exe = {}".format(opts.valgrind, exe))
     if opts.valgrind:
         valgrind_str = get_valgrind() +' --leak-check=full --error-exitcode=1 --show-reachable=yes '
         valgrind = valgrind_str.split();
         exe = valgrind + exe
 
+    print("[execute_bp_sim], opts.emul_debug = {}, exe = {}".format(opts.emul_debug, exe))
     if opts.emul_debug:
          exe += ["--astf-emul-debug"]
 
+    print("[execute_bp_sim], opts.pcap = {}, exe = {}".format(opts.pcap, exe))
     if opts.pcap:
         exe += ["--pcap"]
 
     cmd = exe + ['--tcp_cfg', DEFAULT_OUT_JSON_FILE, '-o', opts.output_file]+args
 
+    print("[execute_bp_sim], opts.full = {}, cmd = {}".format(opts.full, cmd))
     if opts.full:
         cmd = cmd + ['--full', '-d', str(opts.duration)]
 
+    print("[execute_bp_sim], opts.input_client_file = {}, cmd = {}".format(opts.input_client_file, cmd))
     if opts.input_client_file:
         cmd = cmd + ['--client-cfg', str(opts.input_client_file)]
 
+    print("[execute_bp_sim], opts.verbose = {}, cmd = {}".format(opts.verbose, cmd))
     if opts.verbose:
         print ("executing {0}".format(' '.join(cmd)))
 
@@ -161,7 +169,7 @@ def setParserOptions():
                         help="emulation debug",
                         action="store_true")
 
-    parser.add_argument('-v', '--verbose',
+    parser.add_argument('-v', '--verbose',              # astf-sim 对应 c 程序的 printf 输出
                         action="store_true",
                         help="Print output to screen")
 
@@ -191,7 +199,7 @@ def setParserOptions():
                        action="store_true",
                        default=False)
 
-    group.add_argument("--json",
+    group.add_argument("--json",    # 输出模板的json配置信息
                        help="Print JSON output to stdout and exit",
                        action="store_true",
                        default=False)
@@ -312,20 +320,24 @@ def main(args=None):
             return
         if opts.json:
             print(profile.to_json_str())
-            return
+            # return
 
         if opts.stat:
             profile.print_stats()
             return
 
+    # print(profile.to_json_str())
+    print("\nDEFAULT_OUT_JSON_FILE = {}".format(DEFAULT_OUT_JSON_FILE))
     f = open(DEFAULT_OUT_JSON_FILE, 'w')
     f.write(str(profile.to_json_str()).replace("'", "\""))
     f.close()
 
     # if the path is not the same - handle the switch
     if os.path.normpath(opts.bp_sim_path) == os.path.normpath(os.getcwd()):
+        print("--------------------------------------------@cj1, opts = {}".format(opts))
         execute_inplace(opts)
     else:
+        print("--------------------------------------------@cj2")
         execute_with_chdir(opts)
 
     if opts.fix_timing:
