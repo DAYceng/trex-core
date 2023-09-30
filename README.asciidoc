@@ -17,14 +17,14 @@ Cisco开源的一个使用DPDK发包的高性能测试仪。
 How to build TRex
 ```bash
 root@ubuntu:#
-	cd linux_dpdk
+  cd linux_dpdk
   ./b configure  (only once)
   ./b build
 ```
 How to build TRex Simulator
 ```bash
 root@ubuntu:#
-	cd linux
+  cd linux
   ./b configure  (only once)
   ./b build
 ```
